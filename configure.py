@@ -9,6 +9,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from Crypto.Random import get_random_bytes
 from tkinter import messagebox, filedialog
+import condition
 
 global PW
 PW = b"deleteprivacyfile"
@@ -30,16 +31,20 @@ def check_password():
     except Exception as e:
         status_label.config(text=f"오류 발생: {e}")
 
-def load_filelist():
+def load_filelist(first=False):
     try:
-        path = filedialog.askopenfilename(
-            title="파일 로드",
-            filetypes=[("세이브 파일", "*.bin")]
-        )
-        if not path:
-            return
-        with open(path, "rb") as f:
-            data = f.read()
+        if first:
+            with open('save.bin', "rb") as f:
+                data = f.read()
+        else:
+            path = filedialog.askopenfilename(
+                title="파일 로드",
+                filetypes=[("세이브 파일", "*.bin")]
+            )
+            if not path:
+                return
+            with open(path, "rb") as f:
+                data = f.read()
         iv = data[:16]
         encrypted_data = data[16:]
         key = pad(PW, 32)
@@ -60,7 +65,7 @@ def on_closing():
 def call_setting():
     login_frame.destroy()
     setting_pack()
-
+    load_filelist(True)
 
 def save_filelist():
     try:
@@ -171,26 +176,33 @@ submit_button.pack(pady=10, ipady=8)
 submit_button.bind('<Return>', lambda event=None: submit_button.invoke())
 
 setting_frame = ttk.Frame(outer_frame, style='outer.TFrame', padding=(40, 40))
-load_list_btn = ttk.Button(setting_frame, text="파일 목록 로드", command=load_filelist, bootstyle="info", width=30)
 file_list = ttk.ScrolledText(setting_frame, height=20)
 status_label_2 = ttk.Label(setting_frame, text="", style='status.white.TLabel')
 btn_frame = ttk.Frame(setting_frame)
+load_list_btn = ttk.Button(btn_frame, text="파일 목록 로드", command=load_filelist, bootstyle="info", width=13)
 add_files_btn = ttk.Button(btn_frame, text="파일 추가", command=add_files, bootstyle="info", width=13)
 add_folder_btn = ttk.Button(btn_frame, text="폴더 추가", command=add_folder, bootstyle="info", width=13)
 save_list_btn = ttk.Button(setting_frame, text="파일 목록 저장", command=save_filelist, bootstyle="success", width=30)
 change_pw_btn = ttk.Button(setting_frame, text="비밀번호 변경", command=change_pw, bootstyle="danger", width=30)
-alert_label = ttk.Label(setting_frame, text="비밀번호 변경 혹은 파일 분실시 파일 목록 로드는 불가능합니다.", style='white.TLabel', font=base_font)
+# alert_label = ttk.Label(setting_frame, text="비밀번호 변경 혹은 파일 분실시 파일 목록 로드는 불가능합니다.", style='white.TLabel', font=base_font)
+set_days_frame = ttk.Frame(setting_frame)
+set_days_spin = ttk.Spinbox(set_days_frame, width=2, from_=1, to=30, wrap=True)
+set_days_label = ttk.Label(set_days_frame, text="일동안 활성화 되지 않으면 잠금을 실행", style='white.TLabel', font=base_font)
+set_days_btn = ttk.Button(setting_frame, text="설정", width=10, bootstyle="success", command=condition.update_time(set_days_spin.get()))
 
 def setting_pack():
     setting_frame.pack(expand=True, fill=BOTH)
-    alert_label.pack(pady=5)
-    load_list_btn.pack(pady=5)
     file_list.pack()
-    status_label_2.pack(pady=(5, 15))
+    status_label_2.pack(pady=5)
     btn_frame.pack(pady=5)
+    load_list_btn.pack(side=LEFT, padx=5)
     add_files_btn.pack(side=LEFT, padx=5)
     add_folder_btn.pack(side=LEFT, padx=5)
     save_list_btn.pack(pady=5)
     change_pw_btn.pack(pady=5)
+    set_days_frame.pack(pady=5)
+    set_days_spin.pack(side=LEFT, padx=5)
+    set_days_label.pack(side=LEFT, padx=5)
+    set_days_btn.pack(pady=5)
 
 root.mainloop()
