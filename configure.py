@@ -66,7 +66,7 @@ def save_filelist():
     try:
         content = file_list.get("1.0", tk.END)
         data = content.strip().encode()
-        key = pad(PW, 32)  # AES 256
+        key = pad(PW, 32)  
         iv = get_random_bytes(16)
         cipher = AES.new(key, AES.MODE_CBC, iv)
         encrypted_data = cipher.encrypt(pad(data, AES.block_size))
@@ -118,27 +118,21 @@ def change_pw():
             messagebox.showinfo("성공", "비밀번호가 변경되었습니다.", parent=screen)
             print("설정된 비밀번호:", pw1)
             screen.destroy()
-            hashed_password = bcrypt.hashpw(PW.encode(), bcrypt.gensalt())
+            hashed_password = bcrypt.hashpw(pw1.encode(), bcrypt.gensalt())
             with open("password.bin", "wb") as f:
                 f.write(hashed_password)
 
     ttk.Button(screen, text="확인", command=check_password, bootstyle="success", width=30).pack(pady=20)
 
-
-
-
-# GUI
 root = ttk.Window(themename="litera")
 root.title("환경 설정")
 root.configure(width=600, height=800)
 root.configure(bg='#F8F9FA')
 
-# 외부 프레임
 outer_frame = ttk.Frame(root, style='TFrame', width=540, height=720)
 outer_frame.place(relx=0.5, rely=0.5, anchor="center")
 outer_frame.pack_propagate(False)
 
-# 폰트 및 스타일
 title_font = tkFont.Font(family="Noto Sans KR", size=22, weight="bold")
 base_font = tkFont.Font(family="Noto Sans KR", size=12)
 entry_font = tkFont.Font(family="Noto Sans KR", size=14)
@@ -155,40 +149,26 @@ style.configure('info.TButton', font=button_font)
 style.configure('danger.TButton', font=button_font)
 style.configure('status.white.TLabel', font=status_font, foreground='red', background='white')
 
-
-#region 인증
-
-# 내부 카드 프레임
 login_frame = ttk.Frame(outer_frame, style='outer.TFrame', padding=(40, 40))
 login_frame.pack(expand=True, fill=BOTH)
 
-# 제목
 title_label = ttk.Label(login_frame, text="환경설정", style='danger.white.TLabel')
 title_label.pack(pady=(80, 10))
 
-# 부제목
 subtitle_text = "환경 설정을 위해 인증이 필요합니다.\n비밀번호를 입력하여 접근을 허용하세요."
 subtitle_label = ttk.Label(login_frame, text=subtitle_text, style='white.TLabel', justify=CENTER)
 subtitle_label.pack(pady=(10, 30))
 
-# 비밀번호 엔트리
 password_entry = ttk.Entry(login_frame, show="*", font=entry_font, width=30)
 password_entry.pack(pady=(10, 10), ipady=8)
 password_entry.focus_set()
 
-# 상태 메시지
 status_label = ttk.Label(login_frame, text="", style='status.white.TLabel')
 status_label.pack(pady=(5, 15))
 
-# 확인 버튼
 submit_button = ttk.Button(login_frame, text="인증", command=check_password, bootstyle="success", width=28)
 submit_button.pack(pady=10, ipady=8)
 submit_button.bind('<Return>', lambda event=None: submit_button.invoke())
-
-#endregion
-
-
-#region 설정 카드 프레임
 
 setting_frame = ttk.Frame(outer_frame, style='outer.TFrame', padding=(40, 40))
 load_list_btn = ttk.Button(setting_frame, text="파일 목록 로드", command=load_filelist, bootstyle="info", width=30)
@@ -200,7 +180,6 @@ add_folder_btn = ttk.Button(btn_frame, text="폴더 추가", command=add_folder,
 save_list_btn = ttk.Button(setting_frame, text="파일 목록 저장", command=save_filelist, bootstyle="success", width=30)
 change_pw_btn = ttk.Button(setting_frame, text="비밀번호 변경", command=change_pw, bootstyle="danger", width=30)
 alert_label = ttk.Label(setting_frame, text="비밀번호 변경 혹은 파일 분실시 파일 목록 로드는 불가능합니다.", style='white.TLabel', font=base_font)
-
 
 def setting_pack():
     setting_frame.pack(expand=True, fill=BOTH)

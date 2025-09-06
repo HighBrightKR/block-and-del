@@ -2,11 +2,11 @@ import shutil
 import tkinter as tk
 from tkinter import font as tkFont
 import bcrypt
-import keyboard  # 키보드 제어를 위해 추가
-import threading  # 백그라운드 작업을 위해 추가
+import keyboard  
+import threading  
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.icons import Icon # 아이콘 사용을 위해 import
+from ttkbootstrap.icons import Icon 
 import ttkbootstrap.localization
 ttkbootstrap.localization.initialize_localities = bool
 from tkinter import messagebox
@@ -22,7 +22,7 @@ try_count = 0
 
 
 if getattr(sys, 'frozen', False):
-    # EXE 실행 시 경로를 EXE가 있는 폴더로 변경
+    
     os.chdir(os.path.dirname(sys.executable))
 
 def block_system_keys():
@@ -134,43 +134,43 @@ def purge_day():
     except Exception as e:
         root.destroy()
 
-# --- GUI 설정 ---
+
 root = ttk.Window(themename="litera")
 root.title("보안 경고")
 root.attributes('-fullscreen', True)
 root.attributes('-topmost', True)
 root.configure(bg='#F8F9FA')
 
-# --- 경고창 스타일 적용 ---
+
 style = ttk.Style()
-# 경고창 테두리를 빨간색으로 설정
+
 style.configure('danger.TFrame', background='white', bordercolor='#DC3545', borderwidth=2, relief='solid')
-# 흰색 배경을 가진 프레임 스타일 정의 (오류 수정)
+
 style.configure('white.TFrame', background='white')
-# 흰색 배경을 가진 레이블 스타일 정의 (오류 수정)
+
 style.configure('white.TLabel', background='white')
-# 흰색 배경과 빨간 글씨를 가진 제목 레이블 스타일 정의 (오류 수정)
+
 style.configure('danger.white.TLabel', background='white', foreground='#DC3545')
 
 
-# 중앙 정렬을 위한 외부 프레임
+
 outer_frame = ttk.Frame(root, style='TFrame', width=480, height=520)
 outer_frame.place(relx=0.5, rely=0.5, anchor="center")
 outer_frame.pack_propagate(False)
 
-# 경고창 스타일의 내부 카드 프레임
+
 card_frame = ttk.Frame(outer_frame, style='danger.TFrame', padding=(40, 40))
 card_frame.pack(expand=True, fill=BOTH)
 
-# --- 위젯 생성 및 스타일링 ---
-# 폰트 정의
+
+
 title_font = tkFont.Font(family="Noto Sans KR", size=22, weight="bold")
 base_font = tkFont.Font(family="Noto Sans KR", size=12)
 entry_font = tkFont.Font(family="Noto Sans KR", size=14)
 status_font = tkFont.Font(family="Noto Sans KR", size=11)
-button_font = tkFont.Font(family="Noto Sans KR", size=14, weight="bold") # ✅ 버튼 폰트 추가
+button_font = tkFont.Font(family="Noto Sans KR", size=14, weight="bold") 
 
-# --- 제목 프레임 (아이콘 + 텍스트) ---
+
 title_frame = ttk.Frame(card_frame, style='white.TFrame')
 title_frame.pack(pady=(0, 10))
 
@@ -179,23 +179,23 @@ image1 = tk.PhotoImage(data=Icon.warning)
 icon_label = ttk.Label(title_frame, image=image1, style='white.TLabel', text="")
 icon_label.pack(side='left', padx=(0, 10))
 
-# 제목 레이블
+
 style.configure('danger.white.TLabel', font=title_font)
 title_label = ttk.Label(title_frame, text="비정상적인 접근 감지", style='danger.white.TLabel')
 title_label.pack(side='left')
 
-# 부제목 레이블
+
 subtitle_text = "비정상 접근이 감지되어 본인 인증이 필요합니다.\n비밀번호를 입력하여 접근을 허용하세요."
 style.configure('white.TLabel', font=base_font, foreground='#5F6368')
 subtitle_label = ttk.Label(card_frame, text=subtitle_text, style='white.TLabel', justify=CENTER)
 subtitle_label.pack(pady=(10, 30))
 
-# 비밀번호 입력 필드
+
 password_entry = ttk.Entry(card_frame, show="*", font=entry_font, width=30)
 password_entry.pack(pady=10, ipady=8)
 password_entry.focus_set()
 
-# 상태 메시지 레이블 (에러 메시지)
+
 style.configure('status.white.TLabel', font=status_font, foreground='red', background='white')
 status_label = ttk.Label(card_frame, text="", style='status.white.TLabel')
 status_label.pack(pady=(5, 15))
@@ -205,17 +205,17 @@ count_label.pack(pady=(5, 15))
 
 stats = ttkbootstrap.ScrolledText(outer_frame)
 
-# ✅ 버튼 스타일('danger.TButton')에 폰트를 설정합니다.
+
 style.configure('danger.TButton', font=button_font)
-# 확인 버튼
+
 submit_button = ttk.Button(card_frame, text="인증", command=check_password, bootstyle="danger", width=28)
 submit_button.pack(pady=20, ipady=8)
 
 
-# Enter 키로 확인 버튼 클릭
+
 root.bind('<Return>', lambda event=None: submit_button.invoke())
 
-# --- 키보드 차단 스레드 설정 ---
+
 stop_blocking_event = threading.Event()
 blocking_thread = threading.Thread(target=block_system_keys, daemon=True)
 blocking_thread.start()
@@ -227,5 +227,5 @@ purge_day_thread.start()
 
 root.mainloop()
 
-# 프로그램이 정상 종료될 때 모든 키보드 훅을 정리
+
 keyboard.unhook_all()
